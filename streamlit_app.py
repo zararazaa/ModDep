@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-pip install joblib
 import joblib
 
 RAW_DATASET_PATH = "ObesityDataSet_raw_and_data_sinthetic.csv"
