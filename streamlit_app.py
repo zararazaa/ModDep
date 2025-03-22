@@ -7,6 +7,6 @@ def predict_with_model(model, user_input):
 return prediction[0]
 
 def main():
-st.title('Obesity Classification')
-st.info('Tugas Sebelum UTS')
+  st.title('Obesity Classification')
+  st.info('Tugas Sebelum UTS')
 
