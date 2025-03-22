@@ -1,5 +1,5 @@
 import streamlit as st
 
-st.title('🎈 App Name')
+st.title('Obesity Classification :D')
 
-st.write('Hello world!')
+st.write('pig or no pig')
