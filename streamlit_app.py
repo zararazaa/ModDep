@@ -38,19 +38,29 @@ feature_columns = df.columns[:-1]  # Feature columns (excluding target)
 def preprocessing(user_input):
     df_input = pd.DataFrame([user_input], columns=feature_columns)
 
-    # encoding
-    for col in df_input.columns:
-        if col in encoders["label_encoder"]:  # ✅ FIX: Use correct key from pickle file
-            df_input[col] = encoders["label_encoder"][col].transform([df_input[col][0]])  
-        elif col in encoders["one_hot_encoder"]:  # ✅ FIX: Use correct key
-            encoded_df = pd.DataFrame(
-                encoders["one_hot_encoder"][col].transform([[df_input[col][0]]]),
-                columns=encoders["one_hot_encoder"][col].get_feature_names_out([col])
-            )
-            df_input = df_input.drop(col, axis=1).join(encoded_df)
+    # Retrieve single encoders from pickle file
+    label_encoder = encoders.get("label_encoder")  # Gets the single LabelEncoder
+    one_hot_encoder = encoders.get("one_hot_encoder")  # Gets the single OneHotEncoder
 
+    # Apply Label Encoding for binary categorical features
+    binary_columns = ["Gender", "FAVC", "family_history_with_overweight", "SCC", "SMOKE"]  # Update based on dataset
+    for col in binary_columns:
+        if col in df_input.columns:
+            df_input[col] = label_encoder.transform([df_input[col][0]])  # Use single encoder
+
+    # Apply One-Hot Encoding for multi-category categorical features
+    one_hot_columns = ["MTRANS", "CALC", "CAEC"]  # Update based on dataset
+    if one_hot_columns:
+        encoded_df = pd.DataFrame(
+            one_hot_encoder.transform(df_input[one_hot_columns]),
+            columns=one_hot_encoder.get_feature_names_out(one_hot_columns)
+        )
+        df_input = df_input.drop(one_hot_columns, axis=1).join(encoded_df)
+
+    # Apply normalization
     df_input = normalizer.transform(df_input)
     return df_input
+
 
 
 def main():
