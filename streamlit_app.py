@@ -102,8 +102,12 @@ def main():
         model_filename = 'trained_model.pkl'
         model=load_model(model_filename)
         processed_input = preprocessing(user_input)  
-        prediction = predict_with_model(model, processed_input)
+        prediction, probability = predict_with_model(model, processed_input)
         st.write('The prediction output is:', prediction)
+
+        prob_df = pd.DataFrame(probability, columns=model.classes_)
+        st.subheader("Prediction Probabilities")
+        st.dataframe(prob_df)
 
             
 if __name__ == "__main__":
