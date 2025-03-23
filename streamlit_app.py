@@ -15,9 +15,21 @@ def load_data():
     return pd.read_csv(RAW_DATASET_PATH)
 
 #loading trained model
+# def load_model():
+#     model = joblib.load(MODEL_PATH)
+#     return model
+
 def load_model():
-    model = joblib.load(MODEL_PATH)
-    return model
+    try:
+        model = joblib.load(MODEL_PATH)
+        if hasattr(model, "classes_"):  # ✅ Check if the model has been trained
+            st.success("✅ Model is trained and loaded successfully!")
+        else:
+            st.error("❌ Model is not trained! Please retrain and save again.")
+        return model
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        return None
 
 # loading the normalizer
 def load_normalizer():
