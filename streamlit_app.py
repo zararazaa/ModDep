@@ -32,9 +32,11 @@ model = load_model()
 normalizer = load_normalizer()
 encoders = load_encoders()
 
+# Fix encoding variable names
+binary_encoding = encoders.get("label_encoder", {})  # Matches "label_encoder" key in encoding.pkl
+one_hot_encoding = encoders.get("one_hot_encoder", {})  # Matches "one_hot_encoder" key in encoding.pkl
 
-
-feature_columns = df.columns[:-1]
+feature_columns = df.columns[:-1]  # Feature columns (excluding target)
 
 def preprocessing(user_input):
     df_input = pd.DataFrame([user_input], columns=feature_columns)
@@ -50,7 +52,6 @@ def preprocessing(user_input):
             )
             df_input = df_input.drop(col, axis=1).join(encoded_df)
 
-    
     df_input = normalizer.transform(df_input)
     return df_input
 
@@ -64,7 +65,7 @@ def main():
 
     # data visualization
     st.subheader("Data Visualization")
-    data = st.selectbox("Data :3", df)
+    data = st.selectbox("Data :3", df.columns)  # Includes all columns (features + target)
     fig, ax = plt.subplots()
     sns.histplot(df[data], bins=20, kde=True, ax=ax)
     st.pyplot(fig)
@@ -78,17 +79,16 @@ def main():
             user_input[feature] = st.selectbox(f"Select {feature}", df[feature].unique())
         else:
             min_val, max_val = float(df[feature].min()), float(df[feature].max())
-            
-            if feature == "Height":  # Ensure Age is an integer input
-                user_input[feature] = st.slider(f"Enter {feature}", min_val, max_val, (min_val + max_val) / 2)
-            else:  
-                user_input[feature] = st.slider(f"Enter {feature}", int(min_val), int(max_val), int((min_val + max_val) / 2), step=1)
 
+            if feature == "Age":  # Ensure Age is an integer input
+                user_input[feature] = st.slider(f"Enter {feature}", int(min_val), int(max_val), int((min_val + max_val) / 2), step=1)
+            else:  
+                user_input[feature] = st.slider(f"Enter {feature}", min_val, max_val, (min_val + max_val) / 2)
 
     st.write("User Input Data:", user_input)
 
     if st.button("Predict"):
-        processed_input = preprocess_input(user_input)
+        processed_input = preprocessing(user_input)  # FIXED FUNCTION NAME
         prediction = model.predict(processed_input)
         probability = model.predict_proba(processed_input)
 
