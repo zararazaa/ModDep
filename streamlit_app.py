@@ -37,11 +37,10 @@ class ObesityClassifier:
         self.feature_columns = self.df.columns[:-1]  # Exclude target column
 
    def preprocess_input(user_input, normalizer, encoders, feature_columns):
-    df_input = pd.DataFrame([user_input], columns=feature_columns)
-
-    # Fix: Adjust key names based on how they are stored in encoding.pkl
-    label_encoder = encoders.get("label_encoder", {})  # Fetch singular "label_encoder"
-    one_hot_encoder = encoders.get("one_hot_encoder", {})  # Fetch singular "one_hot_encoder"
+        df_input = pd.DataFrame([user_input], columns=feature_columns)
+    
+        label_encoder = encoders.get("label_encoder", {})  # Fetch singular "label_encoder"
+        one_hot_encoder = encoders.get("one_hot_encoder", {})  # Fetch singular "one_hot_encoder"
 
         for col in df_input.columns:
             if col in label_encoder:  # Use singular form
