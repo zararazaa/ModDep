@@ -73,12 +73,20 @@ def main():
 
     # data visualization
     st.subheader("Data Visualization")
-    data = st.selectbox("Select Data :3", df.columns)  # Includes all columns (features + target)
-    fig, ax = plt.subplots()
-    sns.histplot(df[data], bins=20, kde=True, ax=ax)
+    x_axis = "Height"
+    y_axis = "Weight"
+    target = "NObeyesdad"
+    fig, ax = plt.subplots(figsize=(8,5))
+    sns.scatterplot(data=df, x=x_axis, y=y_axis, hue=target, alpha=0.7, edgecolor="pink")
+   
+    plt.xlabel("Height")
+    plt.ylabel("Weight")
+    plt.title("Height vs Weight by Obesity Category")
+    plt.legend(title="Obesity Levels", bbox_to_anchor=(1, 1), loc="upper left")
+
     st.pyplot(fig)
 
-    # User Input Section
+    # User Input
     st.subheader("User Input")
     user_input = {}
 
