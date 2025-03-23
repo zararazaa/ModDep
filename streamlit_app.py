@@ -11,24 +11,22 @@ MODEL_PATH = "trained_model.pkl"
 NORMALIZER_PATH = "normalizer.pkl"
 ENCODING_PATH = "encoding.pkl"
 
-# Load assets
-@st.cache_data
+#to show raw data
 def load_data():
     return pd.read_csv(RAW_DATASET_PATH)
 
-@st.cache_resource
+#loading trained model
 def load_model():
     return joblib.load(MODEL_PATH)
 
-@st.cache_resource
+# loading the normalizer
 def load_normalizer():
     return joblib.load(NORMALIZER_PATH)
 
-@st.cache_resource
-def load_encoders():
+# loading the encoder
+    def load_encoders():
     return joblib.load(ENCODING_PATH)
 
-# Load everything
 df = load_data()
 model = load_model()
 normalizer = load_normalizer()
@@ -38,38 +36,35 @@ encoders = load_encoders()
 label_encoder = encoders.get("label_encoder", {})
 one_hot_encoder = encoders.get("one_hot_encoder", {})
 
-# Feature columns (excluding target column)
 feature_columns = df.columns[:-1]
 
-# Function to preprocess user input
-def preprocess_input(user_input):
+def preprocessing(user_input):
     df_input = pd.DataFrame([user_input], columns=feature_columns)
 
-    # Apply encoding
+    # encoding
     for col in df_input.columns:
-        if col in binary_encoding:  # Binary categorical features
+        if col in binary_encoding:  # binary
             df_input[col] = binary_encoding[col].transform([df_input[col][0]])  
         elif col in one_hot_encoding: 
-            encoded_df = pd.DataFrame(
+            encoded_df = pd.DataFrame( #ohe
                 one_hot_encoding[col].transform([[df_input[col][0]]]),
                 columns=one_hot_encoding[col].get_feature_names_out([col])
             )
             df_input = df_input.drop(col, axis=1).join(encoded_df)
 
-    # Apply normalization
+    
     df_input = normalizer.transform(df_input)
     return df_input
 
-# Streamlit UI
+
 def main():
     st.title("Obesity Classification App")
-    st.info("Tugas Sebelum UTS - Machine Learning OOP Implementation")
+    st.info("2702353221 - Zara Abigail Budiman - Tugas Sebelum UTS - Machine Learning OOP Implementation")
 
-    # Show raw data
-    if st.checkbox("Show Raw Data"):
+    if st.checkbox("Raw Data"):
         st.dataframe(df)
 
-    # Data visualization
+    # data visualization
     st.subheader("Data Visualization")
     selected_feature = st.selectbox("Select feature for distribution plot", feature_columns)
     fig, ax = plt.subplots()
@@ -86,15 +81,14 @@ def main():
         else:
             min_val, max_val = float(df[feature].min()), float(df[feature].max())
             
-            if feature == "Age":  # Ensure Age is an integer input
-                user_input[feature] = st.slider(f"Enter {feature}", int(min_val), int(max_val), int((min_val + max_val) / 2), step=1)
-            else:  
+            if feature == "Height":  # Ensure Age is an integer input
                 user_input[feature] = st.slider(f"Enter {feature}", min_val, max_val, (min_val + max_val) / 2)
+            else:  
+                user_input[feature] = st.slider(f"Enter {feature}", int(min_val), int(max_val), int((min_val + max_val) / 2), step=1)
 
-    # Show input data
+
     st.write("User Input Data:", user_input)
 
-    # Prediction
     if st.button("Predict"):
         processed_input = preprocess_input(user_input)
         prediction = model.predict(processed_input)
