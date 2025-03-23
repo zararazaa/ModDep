@@ -60,7 +60,7 @@ def main():
     st.title("Obesity Classification App")
     st.info("2702353221 - Zara Abigail Budiman - Tugas Sebelum UTS - Machine Learning OOP Implementation")
 
-    if st.checkbox("Raw Data"):
+    if st.subheader("Raw Data"):
         st.dataframe(df)
 
     # data visualization
@@ -80,10 +80,10 @@ def main():
         else:
             min_val, max_val = float(df[feature].min()), float(df[feature].max())
 
-            if feature == "Age":  # Ensure Age is an integer input
-                user_input[feature] = st.slider(f"Enter {feature}", int(min_val), int(max_val), int((min_val + max_val) / 2), step=1)
-            else:  
+            if feature == "Height":  # Ensure Age is an integer input
                 user_input[feature] = st.slider(f"Enter {feature}", min_val, max_val, (min_val + max_val) / 2)
+            else:  
+                user_input[feature] = st.slider(f"Enter {feature}", int(min_val), int(max_val), int((min_val + max_val) / 2), step=1)
 
     st.write("User Input Data:", user_input)
 
