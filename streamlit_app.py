@@ -66,7 +66,7 @@ def main():
     st.subheader("Data Visualization")
     data = st.selectbox("Data :3", df)
     fig, ax = plt.subplots()
-    sns.histplot(df[selected_feature], bins=20, kde=True, ax=ax)
+    sns.histplot(df[data], bins=20, kde=True, ax=ax)
     st.pyplot(fig)
 
     # User Input Section
