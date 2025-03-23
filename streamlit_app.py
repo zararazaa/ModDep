@@ -44,16 +44,16 @@ def preprocessing(user_input):
             if col in df_input.columns:
                 df_input[col] = binary_encoders[col].transform([df_input[col][0]])
     
-        for col in one_hot_encoders:
-            if col in df_input.columns:
-                encoded_df = pd.DataFrame(
-                    one_hot_encoders[col].transform([[df_input[col][0]]]),
-                    columns=one_hot_encoders[col].get_feature_names_out([col])
-                )
-                df_input = df_input.drop(col, axis=1).join(encoded_df)
-    
-        df_input = normalizer.transform(df_input)
-        return df_input
+            for col in one_hot_encoders:
+                if col in df_input.columns:
+                    encoded_df = pd.DataFrame(
+                        one_hot_encoders[col].transform([[df_input[col][0]]]),
+                        columns=one_hot_encoders[col].get_feature_names_out([col])
+                    )
+                    df_input = df_input.drop(col, axis=1).join(encoded_df)
+        
+            df_input = normalizer.transform(df_input)
+            return df_input
 
 
 
