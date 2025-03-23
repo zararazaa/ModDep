@@ -84,16 +84,16 @@ def main():
     user_input = {}
 
     for feature in classifier.feature_columns:
-    if classifier.df[feature].dtype == 'object':
-        user_input[feature] = st.selectbox(f"Select {feature}", classifier.df[feature].unique())
-    else:
-        min_val, max_val = float(classifier.df[feature].min()), float(classifier.df[feature].max())  # Ensure values exist
-        
-        if feature == "Height":
-            user_input[feature] = st.slider(f"Enter {feature}", min_value=min_val, max_value=max_val, value=(min_val + max_val) / 2)
+        if classifier.df[feature].dtype == 'object':
+            user_input[feature] = st.selectbox(f"Select {feature}", classifier.df[feature].unique())
         else:
-            user_input[feature] = st.slider(f"Enter {feature}", min_value=int(min_val), max_value=int(max_val), value=int((min_val + max_val) / 2), step=1)
-
+            min_val, max_val = float(classifier.df[feature].min()), float(classifier.df[feature].max())  # Ensure values exist
+            
+            if feature == "Height":
+                user_input[feature] = st.slider(f"Enter {feature}", min_value=min_val, max_value=max_val, value=(min_val + max_val) / 2)
+            else:
+                user_input[feature] = st.slider(f"Enter {feature}", min_value=int(min_val), max_value=int(max_val), value=int((min_val + max_val) / 2), step=1)
+    
 
     # Show input data
     st.write("User Input Data:", user_input)
