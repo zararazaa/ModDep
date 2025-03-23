@@ -32,9 +32,6 @@ model = load_model()
 normalizer = load_normalizer()
 encoders = load_encoders()
 
-# Fix encoding variable names
-binary_encoding = encoders.get("label_encoder", {})  # Matches "label_encoder" key in encoding.pkl
-one_hot_encoding = encoders.get("one_hot_encoder", {})  # Matches "one_hot_encoder" key in encoding.pkl
 
 feature_columns = df.columns[:-1]  # Feature columns (excluding target)
 
@@ -43,12 +40,12 @@ def preprocessing(user_input):
 
     # encoding
     for col in df_input.columns:
-        if col in binary_encoding:  # binary
-            df_input[col] = binary_encoding[col].transform([df_input[col][0]])  
-        elif col in one_hot_encoding: 
-            encoded_df = pd.DataFrame( #ohe
-                one_hot_encoding[col].transform([[df_input[col][0]]]),
-                columns=one_hot_encoding[col].get_feature_names_out([col])
+        if col in encoders["label_encoder"]:  # ✅ FIX: Use correct key from pickle file
+            df_input[col] = encoders["label_encoder"][col].transform([df_input[col][0]])  
+        elif col in encoders["one_hot_encoder"]:  # ✅ FIX: Use correct key
+            encoded_df = pd.DataFrame(
+                encoders["one_hot_encoder"][col].transform([[df_input[col][0]]]),
+                columns=encoders["one_hot_encoder"][col].get_feature_names_out([col])
             )
             df_input = df_input.drop(col, axis=1).join(encoded_df)
 
