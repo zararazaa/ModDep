@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 RAW_DATASET_PATH = "ObesityDataSet_raw_and_data_sinthetic.csv"
-MODEL_PATH = "trained_model.pkl"
 NORMALIZER_PATH = "normalizer.pkl"
 ENCODING_PATH = "encoding.pkl"
 
@@ -32,7 +31,6 @@ def load_encoders():
     return joblib.load(ENCODING_PATH)
 
 df = load_data()
-model = load_model()
 normalizer = load_normalizer()
 encoders = load_encoders()
 
@@ -101,6 +99,8 @@ def main():
     st.write("User Input Data:", user_input)
 
     if st.button("Predict"):
+        model_filename = 'trained_model.pkl'
+        model=load_model(model_filename)
         processed_input = preprocessing(user_input)  
         prediction = predict_with_model(model, processed_input)
         st.wrtie('The prediction output is:', prediction)
