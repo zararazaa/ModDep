@@ -103,7 +103,7 @@ def main():
         model=load_model(model_filename)
         processed_input = preprocessing(user_input)  
         prediction = predict_with_model(model, processed_input)
-        st.wrtie('The prediction output is:', prediction)
+        st.write('The prediction output is:', prediction)
 
             
 if __name__ == "__main__":
