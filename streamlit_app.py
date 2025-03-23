@@ -36,23 +36,28 @@ class ObesityClassifier:
         self.df = load_data()
         self.feature_columns = self.df.columns[:-1]  # Exclude target column
 
-    def preprocess_input(self, user_input):
-        df_input = pd.DataFrame([user_input], columns=self.feature_columns)
+   def preprocess_input(user_input, normalizer, encoders, feature_columns):
+    df_input = pd.DataFrame([user_input], columns=feature_columns)
 
+    # Fix: Adjust key names based on how they are stored in encoding.pkl
+    label_encoder = encoders.get("label_encoder", {})  # Fetch singular "label_encoder"
+    one_hot_encoder = encoders.get("one_hot_encoder", {})  # Fetch singular "one_hot_encoder"
 
         for col in df_input.columns:
-            if col in self.encoders["label_encoders"]:  
-                df_input[col] = self.encoders["label_encoders"][col].transform(df_input[col])
-            elif col in self.encoders["one_hot_encoders"]:
+            if col in label_encoder:  # Use singular form
+                df_input[col] = label_encoder[col].transform([df_input[col][0]])  # Ensure correct format
+            elif col in one_hot_encoder:  # Use singular form
                 encoded_df = pd.DataFrame(
-                    self.encoders["one_hot_encoders"][col].transform(df_input[[col]]),
-                    columns=self.encoders["one_hot_encoders"][col].get_feature_names_out([col])
+                    one_hot_encoder[col].transform([[df_input[col][0]]]),
+                    columns=one_hot_encoder[col].get_feature_names_out([col])
                 )
                 df_input = df_input.drop(col, axis=1).join(encoded_df)
-
+    
         # Apply normalization
-        df_input = self.normalizer.transform(df_input)
+        df_input = normalizer.transform(df_input)
         return df_input
+
+   
 
     def predict(self, user_input):
         processed_input = self.preprocess_input(user_input)
