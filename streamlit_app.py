@@ -5,7 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# File paths
 RAW_DATASET_PATH = "ObesityDataSet_raw_and_data_sinthetic.csv"
 MODEL_PATH = "trained_model.pkl"
 NORMALIZER_PATH = "normalizer.pkl"
@@ -17,7 +16,8 @@ def load_data():
 
 #loading trained model
 def load_model():
-    return joblib.load(MODEL_PATH)
+    model = joblib.load(MODEL_PATH)
+    return model
 
 # loading the normalizer
 def load_normalizer():
@@ -37,26 +37,6 @@ one_hot_encoders = encoders.get("one_hot_encoders", {})
 
 feature_columns = df.columns[:-1] 
 
-class Modeling:
-    def __init__(self, model_path):
-        self.model_path = model_path
-        self.model = None
-        self.load_model()
-
-    def load_model(self):
-        try:
-            with open(self.model_path, "rb") as file:
-                self.model = pickle.load(file)
-        except Exception as e:
-            st.error(f"Error loading model: {e}")
-
-    def predict(self, processed_input):
-        if self.model is None:
-            st.error("Model is not loaded. Please train and save the model first.")
-            return None
-        return self.model.predict(processed_input), self.model.predict_proba(processed_input)
-
-modeling = Modeling(MODEL_PATH)
 
 def preprocessing(user_input):
     df_input = pd.DataFrame([user_input], columns=feature_columns)
@@ -76,7 +56,10 @@ def preprocessing(user_input):
     df_input = normalizer.transform(df_input)
     return df_input
 
-
+def predict_with_model(model, processed_input):
+    prediction = model.predict(processed_input)
+    probability = model.predict_proba(processed_input)
+    return prediction[0], probability
 
 
 def main():
@@ -115,13 +98,14 @@ def main():
 
     if st.button("Predict"):
         processed_input = preprocessing(user_input)  
-        prediction, probability = modeling.predict(processed_input)
-
+        prediction, probability = predict_with_model(processed_input)
+    
         if prediction is not None:
-            st.success(f"Predicted Category: {prediction[0]}")
+            st.success(f"Predicted Category: {prediction}")
             prob_df = pd.DataFrame(probability, columns=modeling.model.classes_)
             st.subheader("Prediction Probabilities")
             st.dataframe(prob_df)
+
             
 if __name__ == "__main__":
     main()
