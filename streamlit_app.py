@@ -36,7 +36,7 @@ class ObesityClassifier:
         self.df = load_data()
         self.feature_columns = self.df.columns[:-1]  # Exclude target column
 
-   def preprocess_input(user_input, normalizer, encoders, feature_columns):
+    def preprocess_input(user_input, normalizer, encoders, feature_columns):
         df_input = pd.DataFrame([user_input], columns=feature_columns)
     
         label_encoder = encoders.get("label_encoder", {})  # Fetch singular "label_encoder"
