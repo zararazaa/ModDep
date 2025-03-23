@@ -3,4 +3,5 @@ scikit-learn
 pandas
 numpy
 matplotlib
+seaborne
 streamlit>=1.26.0
