@@ -98,7 +98,7 @@ def main():
 
     if st.button("Predict"):
         processed_input = preprocessing(user_input)  
-        prediction, probability = predict_with_model(processed_input)
+        prediction, probability = predict_with_model(model,processed_input)
     
         if prediction is not None:
             st.success(f"Predicted Category: {prediction}")
