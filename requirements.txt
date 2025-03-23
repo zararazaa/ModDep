@@ -3,5 +3,5 @@ scikit-learn
 pandas
 numpy
 matplotlib
-seaborne
+seaborn
 streamlit>=1.26.0
