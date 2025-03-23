@@ -24,7 +24,7 @@ def load_normalizer():
     return joblib.load(NORMALIZER_PATH)
 
 # loading the encoder
-    def load_encoders():
+def load_encoders():
     return joblib.load(ENCODING_PATH)
 
 df = load_data()
@@ -32,9 +32,7 @@ model = load_model()
 normalizer = load_normalizer()
 encoders = load_encoders()
 
-# Fix encoding keys (adjusting to how they were saved)
-label_encoder = encoders.get("label_encoder", {})
-one_hot_encoder = encoders.get("one_hot_encoder", {})
+
 
 feature_columns = df.columns[:-1]
 
@@ -66,7 +64,7 @@ def main():
 
     # data visualization
     st.subheader("Data Visualization")
-    selected_feature = st.selectbox("Select feature for distribution plot", feature_columns)
+    data = st.selectbox("Data :3", df)
     fig, ax = plt.subplots()
     sns.histplot(df[selected_feature], bins=20, kde=True, ax=ax)
     st.pyplot(fig)
