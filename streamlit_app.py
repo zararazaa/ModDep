@@ -68,7 +68,7 @@ def main():
     st.info("2702353221 - Zara Abigail Budiman - Tugas Sebelum UTS - Machine Learning OOP Implementation")
 
     if st.subheader("Raw Data"):
-        st.info("this is raw data")
+        st.write("this is raw data")
         st.dataframe(df)
 
     # data visualization
