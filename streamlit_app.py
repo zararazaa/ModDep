@@ -47,12 +47,12 @@ def preprocess_input(user_input):
 
     # Apply encoding
     for col in df_input.columns:
-        if col in label_encoder:  # Binary categorical features
-            df_input[col] = label_encoder[col].transform([df_input[col][0]])  
-        elif col in one_hot_encoder:  # One-hot categorical features
+        if col in binary_encoding:  # Binary categorical features
+            df_input[col] = binary_encoding[col].transform([df_input[col][0]])  
+        elif col in one_hot_encoding: 
             encoded_df = pd.DataFrame(
-                one_hot_encoder[col].transform([[df_input[col][0]]]),
-                columns=one_hot_encoder[col].get_feature_names_out([col])
+                one_hot_encoding[col].transform([[df_input[col][0]]]),
+                columns=one_hot_encoding[col].get_feature_names_out([col])
             )
             df_input = df_input.drop(col, axis=1).join(encoded_df)
 
