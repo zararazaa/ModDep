@@ -7,7 +7,7 @@ import seaborn as sns
 
 # File paths
 RAW_DATASET_PATH = "ObesityDataSet_raw_and_data_sinthetic.csv"
-MODEL_PATH = "trained_model (1).pkl"
+MODEL_PATH = "trained_model.pkl"
 NORMALIZER_PATH = "normalizer.pkl"
 ENCODING_PATH = "encoding.pkl"
 
