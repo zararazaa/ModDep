@@ -7,7 +7,7 @@ import seaborn as sns
 
 # File paths
 RAW_DATASET_PATH = "ObesityDataSet_raw_and_data_sinthetic.csv"
-MODEL_PATH = "trained_model.pkl"
+MODEL_PATH = "trained_model (1).pkl"
 NORMALIZER_PATH = "normalizer.pkl"
 ENCODING_PATH = "encoding.pkl"
 
@@ -32,37 +32,29 @@ model = load_model()
 normalizer = load_normalizer()
 encoders = load_encoders()
 
+binary_encoders = encoders.get("binary_encoders", {})  
+one_hot_encoders = encoders.get("one_hot_encoders", {})  
 
-feature_columns = df.columns[:-1]  # Feature columns (excluding target)
+feature_columns = df.columns[:-1] 
 
 def preprocessing(user_input):
     df_input = pd.DataFrame([user_input], columns=feature_columns)
 
-    # Retrieve single encoders from pickle file
-    label_encoder = encoders.get("label_encoder")  # Gets the single LabelEncoder
-    one_hot_encoder = encoders.get("one_hot_encoder")  # Gets the single OneHotEncoder
+    for col in binary_encoders:
+            if col in df_input.columns:
+                df_input[col] = binary_encoders[col].transform([df_input[col][0]])
+    
+        for col in one_hot_encoders:
+            if col in df_input.columns:
+                encoded_df = pd.DataFrame(
+                    one_hot_encoders[col].transform([[df_input[col][0]]]),
+                    columns=one_hot_encoders[col].get_feature_names_out([col])
+                )
+                df_input = df_input.drop(col, axis=1).join(encoded_df)
+    
+        df_input = normalizer.transform(df_input)
+        return df_input
 
-    # Apply Label Encoding for binary categorical features
-    binary_columns = ["Gender", "FAVC", "family_history_with_overweight", "SCC", "SMOKE"]  # Update based on dataset
-    for col in binary_columns:
-        if col in df_input.columns:
-            if df_input[col][0] in label_encoder.classes_:  # ✅ Check if label exists in trained data
-                df_input[col] = label_encoder.transform([df_input[col][0]])
-            else:
-                df_input[col] = label_encoder.transform([label_encoder.classes_[0]])  # ✅ Replace with a known value
-
-    # Apply One-Hot Encoding for multi-category categorical features
-    one_hot_columns = ["MTRANS", "CALC", "CAEC"]  # Update based on dataset
-    if one_hot_columns:
-        encoded_df = pd.DataFrame(
-            one_hot_encoder.transform(df_input[one_hot_columns]),
-            columns=one_hot_encoder.get_feature_names_out(one_hot_columns)
-        )
-        df_input = df_input.drop(one_hot_columns, axis=1).join(encoded_df)
-
-    # Apply normalization
-    df_input = normalizer.transform(df_input)
-    return df_input
 
 
 
@@ -71,11 +63,12 @@ def main():
     st.info("2702353221 - Zara Abigail Budiman - Tugas Sebelum UTS - Machine Learning OOP Implementation")
 
     if st.subheader("Raw Data"):
+        st.info("this is raw data")
         st.dataframe(df)
 
     # data visualization
     st.subheader("Data Visualization")
-    data = st.selectbox("Data :3", df.columns)  # Includes all columns (features + target)
+    data = st.selectbox("Select Data :3", df.columns)  # Includes all columns (features + target)
     fig, ax = plt.subplots()
     sns.histplot(df[data], bins=20, kde=True, ax=ax)
     st.pyplot(fig)
@@ -90,7 +83,7 @@ def main():
         else:
             min_val, max_val = float(df[feature].min()), float(df[feature].max())
 
-            if feature == "Height":  # Ensure Age is an integer input
+            if feature == "Height":  
                 value = st.slider(f"Enter {feature}", min_val, max_val, (min_val + max_val) / 2)
                 user_input[feature] = round(value,2)
                 
@@ -100,13 +93,12 @@ def main():
     st.write("User Input Data:", user_input)
 
     if st.button("Predict"):
-        processed_input = preprocessing(user_input)  # FIXED FUNCTION NAME
+        processed_input = preprocessing(user_input)  
         prediction = model.predict(processed_input)
         probability = model.predict_proba(processed_input)
 
         st.success(f"Predicted Category: {prediction[0]}")
 
-        # Show probability for each class
         prob_df = pd.DataFrame(probability, columns=model.classes_)
         st.subheader("Prediction Probabilities")
         st.dataframe(prob_df)
