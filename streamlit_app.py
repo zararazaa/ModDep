@@ -37,6 +37,27 @@ one_hot_encoders = encoders.get("one_hot_encoders", {})
 
 feature_columns = df.columns[:-1] 
 
+class Modeling:
+    def __init__(self, model_path):
+        self.model_path = model_path
+        self.model = None
+        self.load_model()
+
+    def load_model(self):
+        try:
+            with open(self.model_path, "rb") as file:
+                self.model = pickle.load(file)
+        except Exception as e:
+            st.error(f"Error loading model: {e}")
+
+    def predict(self, processed_input):
+        if self.model is None:
+            st.error("Model is not loaded. Please train and save the model first.")
+            return None
+        return self.model.predict(processed_input), self.model.predict_proba(processed_input)
+
+modeling = Modeling(MODEL_PATH)
+
 def preprocessing(user_input):
     df_input = pd.DataFrame([user_input], columns=feature_columns)
 
@@ -94,14 +115,13 @@ def main():
 
     if st.button("Predict"):
         processed_input = preprocessing(user_input)  
-        prediction = model.predict(processed_input)
-        probability = model.predict_proba(processed_input)
+        prediction, probability = modeling.predict(processed_input)
 
-        st.success(f"Predicted Category: {prediction[0]}")
-
-        prob_df = pd.DataFrame(probability, columns=model.classes_)
-        st.subheader("Prediction Probabilities")
-        st.dataframe(prob_df)
-
+        if prediction is not None:
+            st.success(f"Predicted Category: {prediction[0]}")
+            prob_df = pd.DataFrame(probability, columns=modeling.model.classes_)
+            st.subheader("Prediction Probabilities")
+            st.dataframe(prob_df)
+            
 if __name__ == "__main__":
     main()
