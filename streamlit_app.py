@@ -46,7 +46,10 @@ def preprocessing(user_input):
     binary_columns = ["Gender", "FAVC", "family_history_with_overweight", "SCC", "SMOKE"]  # Update based on dataset
     for col in binary_columns:
         if col in df_input.columns:
-            df_input[col] = label_encoder.transform([df_input[col][0]])  # Use single encoder
+            if df_input[col][0] in label_encoder.classes_:  # ✅ Check if label exists in trained data
+                df_input[col] = label_encoder.transform([df_input[col][0]])
+            else:
+                df_input[col] = label_encoder.transform([label_encoder.classes_[0]])  # ✅ Replace with a known value
 
     # Apply One-Hot Encoding for multi-category categorical features
     one_hot_columns = ["MTRANS", "CALC", "CAEC"]  # Update based on dataset
