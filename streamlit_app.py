@@ -81,7 +81,8 @@ def main():
             min_val, max_val = float(df[feature].min()), float(df[feature].max())
 
             if feature == "Height":  # Ensure Age is an integer input
-                user_input[feature] = st.slider(f"Enter {feature}", min_val, max_val, (min_val + max_val) / 2, 2)
+                value = st.slider(f"Enter {feature}", min_val, max_val, (min_val + max_val) / 2)
+                user_input[feature] = round(value,2)
                 
             else:  
                 user_input[feature] = st.slider(f"Enter {feature}", int(min_val), int(max_val), int((min_val + max_val) / 2), step=1)
