@@ -19,17 +19,9 @@ def load_data():
 #     model = joblib.load(MODEL_PATH)
 #     return model
 
-def load_model():
-    try:
-        model = joblib.load(MODEL_PATH)
-        if hasattr(model, "classes_"):  # ✅ Check if the model has been trained
-            st.success("✅ Model is trained and loaded successfully!")
-        else:
-            st.error("❌ Model is not trained! Please retrain and save again.")
-        return model
-    except Exception as e:
-        st.error(f"Error loading model: {e}")
-        return None
+def load_model(filename):
+    model = joblib.load(filename)
+    return model
 
 # loading the normalizer
 def load_normalizer():
@@ -110,13 +102,8 @@ def main():
 
     if st.button("Predict"):
         processed_input = preprocessing(user_input)  
-        prediction, probability = predict_with_model(model,processed_input)
-    
-        if prediction is not None:
-            st.success(f"Predicted Category: {prediction}")
-            prob_df = pd.DataFrame(probability, columns=modeling.model.classes_)
-            st.subheader("Prediction Probabilities")
-            st.dataframe(prob_df)
+        prediction = predict_with_model(model, processed_input)
+        st.wrtie('The prediction output is:', prediction)
 
             
 if __name__ == "__main__":
