@@ -121,5 +121,3 @@ def main():
             
 if __name__ == "__main__":
     main()
-
-why isn't this fitted yet but in the pickle it should already be fitted
